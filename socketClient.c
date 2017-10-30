@@ -77,7 +77,7 @@ int main (int argc, char **argv)
     }
 
     
-    if(strcmp ("write",command) != 0){
+    if(strcmp ("write",command) == 0){
         
         write_file (stdin, socket_fd,fileName);   
     }
@@ -127,6 +127,7 @@ void send_message (FILE *fp, int socket_fd)
 void read_file (FILE *fp, int socket_fd, char * fileName)
 {
 
+    printf("in read_file function");
     int i;
     int n;
     int j=4;
@@ -135,29 +136,30 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
     char recv_line [MAX_LINE_SIZE];
     char command [MAX_LINE_SIZE];
     int output;
-    //open or create file
+    
+    printf("This is filename %s \n",fileName);
+   //open or create file
     output=open(fileName,O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
     if(output == -1){
-        printf("Error could not open file");
+        printf("Error could not open file\n");
         return;
     }
     //Create message to send to server
     strcpy(send_line,"rrq  ");
     strcat (send_line,fileName);
     
-    printf("command being sent to server %s /n", send_line);
+    printf("command being sent to server %s \n", send_line);
 
-    while (fgets (send_line, MAX_LINE_SIZE, fp) != (char *) NULL)
+    n = strlen (send_line);
+    printf("size of line %d",n);
+    if ((i = write_n (socket_fd, send_line, n)) != n)
     {
-        n = strlen (send_line);
-        if ((i = write_n (socket_fd, send_line, n)) != n)
-        {
-            printf ("write_n ERROR in send_message");
+        printf ("write_n ERROR in send_message");
 	    exit (1);
-        }
+    }
         
         
-        do{
+      /*  do{
             n = read_line (socket_fd, recv_line, MAX_LINE_SIZE);
             if (n < 0)
             {
@@ -258,8 +260,8 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
 
             }
         
-        }while(strcmp(command,"eof  "!=0));
-    }
+        }while(strcmp(command,"eof  "!=0));*/
+    
     if (ferror (fp))
     {
         printf ("message ERROR in send_message");
