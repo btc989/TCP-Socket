@@ -163,7 +163,9 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
     {
         printf ("write_n ERROR in send_message");
 	    exit (1);
-    }        
+    }    
+    //CODE WILL WORK UP TO HE IF THE REST IS COMMENTED OUT
+    
  // do
  // {
         printf("TEST::After write, i: %d\n", i);
