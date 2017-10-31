@@ -1,6 +1,3 @@
-#ifndef SOCKETINCLUDE_H_
-#define SOCKETINCLUDE_H_
-
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
@@ -24,4 +21,3 @@ int read_n (int fd, char *ptr, int n_bytes);
 void message_echo (int socket_fd);
 void read_file (FILE *fp, int socket_fd, char * fileName);
 void write_file (FILE *fp, int socket_fd, char * fileName);
-#endif

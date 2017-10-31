@@ -96,6 +96,9 @@ void message_echo (int socket_fd)
         printf("TEST::Just before read line\n");
 
         n = read_line (socket_fd, line, MAX_LINE_SIZE);
+
+        printf("TEST::return form read_line is: %d\n", n);
+
         if (n == 0)
         {  
             break;
@@ -111,25 +114,28 @@ void message_echo (int socket_fd)
         }
 
         printf("\nTEST::The line: %s\n",line);
-	printf("TEST::The size is %d\n", n);
+	    printf("TEST::The size is %d\n", n);
 
-   	strncpy(command,line,5);
+   	    strncpy(command,line,5);
 
     	printf("TEST::The command is: %s\n",command);
-    }//TEMP FORLOOP BREAK
 
         //if read request
-     /* if(strcmp(command, "rrq  ")==0)
-	{
+        if(strcmp(command, "rrq  ")==0)	//if the command is rrq
+	    {
         	//copy data into file
-	        int t =0;
-        	printf("made it into rrq");
-	        for(j=4; j<strlen(line); j++)
+	        int t = 0;
+
+        	printf("TEST::Inside rrq if statement\n");
+
+	        for(j=5; j<strlen(line); j++)
         	{       
 	            	fileName[t]=line[j];
         	    	t++;
         	}
-       		printf("The filename %s",fileName);
+
+       		printf("TEST::The filename %s\n",fileName);
+
         	inFile=open(fileName,O_RDONLY);
         	if (inFile==-1)
         	{       
@@ -137,9 +143,32 @@ void message_echo (int socket_fd)
             		return;
         	}
         
-        	printf("Opened file /n" );
-        
-             /* fseek (inFile, 0, SEEK_END);
+        	printf("TEST::File was opened, FD: %d\n", inFile);
+            
+
+		    //Check if the file is empty
+
+		    char tempCom[MAX_LINE_SIZE];
+		    int tempN;
+		    tempN = read_line(inFile, tempCom, MAX_LINE_SIZE); 
+
+		    printf("TEST::First line of file: %s\n", tempCom);
+		    printf("TEST::Return from read_line function: %d\n", tempN);
+
+		    //If tempN == 0 the file is empty
+		    //If tempN > 0 the file has data
+		    //If tempN < 0 then there is an error
+
+            if(tempN == 0)
+            {
+                printf("TEST::The file was empty, sending eof\n");
+
+                write_n(socket_fd, "eof\0", 4);
+            }	
+
+	    } // TEMP END IF
+    } //TEMP END FOR
+		/* fseek (inFile, 0, SEEK_END);
         	size = ftell(inFile);
 
         	if (0 == size) 
