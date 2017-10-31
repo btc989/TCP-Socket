@@ -116,7 +116,7 @@ void message_echo (int socket_fd)
    	    strncpy(command,line,5);
 
     	printf("TEST::The command is: %s\n",command);
-
+    }//TEMP FORLOOP BREAK
 
         //if read request
      /* if(strcmp(command, "rrq  ")==0)
@@ -266,4 +266,5 @@ void message_echo (int socket_fd)
 	        exit (1);
         }
     }*/
+    return;
 } //end function
