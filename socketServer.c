@@ -110,17 +110,17 @@ void message_echo (int socket_fd)
            printf ("%c", line [i]);
         }
 
-        printf("TEST::The line: %s\n",line);
-	    printf("TEST::The size is %d\n", n);
+        printf("\nTEST::The line: %s\n",line);
+	printf("TEST::The size is %d\n", n);
 
-   	    strncpy(command,line,5);
+   	strncpy(command,line,5);
 
     	printf("TEST::The command is: %s\n",command);
     }//TEMP FORLOOP BREAK
 
         //if read request
      /* if(strcmp(command, "rrq  ")==0)
-	    {
+	{
         	//copy data into file
 	        int t =0;
         	printf("made it into rrq");
@@ -143,17 +143,17 @@ void message_echo (int socket_fd)
         	size = ftell(inFile);
 
         	if (0 == size) 
-		    {
+		{
             		printf("file is empty\n");
             		//if file is empty return eof mesage
             		strcpy(line, "eof   \0");
             		write_n (socket_fd, line, n);
         	}
         	else
-		    {
+		{
             		strcpy(line, "data ");
              		while( (n_char=read(getline(&data, &len, inFile)) != -1))
-            }
+            	}
                 if(count == 11)
 		        {
                     //send message to see if client wants to continue to recieve messages
@@ -188,7 +188,7 @@ void message_echo (int socket_fd)
                 count++;
                 //wait for ack message
                 for(;;)
-		        {
+		{
                     n = read_line (socket_fd, line, MAX_LINE_SIZE);
                     if (n == 0)
                     {  
