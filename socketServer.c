@@ -87,7 +87,8 @@ void message_echo (int socket_fd)
     char command [6];
     bzero(line, sizeof(line));
     bzero(fileName, sizeof(fileName));
-    size_t len = 0;
+    bzero(data, sizeof(data));
+    size_t len = 512;
     int count =1;
     
     for(;;)
@@ -101,34 +102,30 @@ void message_echo (int socket_fd)
 
         if (n == 0)
         {  
-            break;
+            //break;
         }
         if (n < 0)
         {
            printf ("read_line ERROR in message_echo");
            exit (1);
         }
-        for (i = 0; i < n; i ++)
-        {
-           printf ("%c", line [i]);
-        }
 
-        printf("\nTEST::The line: %s\n",line);
-	    printf("TEST::The size is %d\n", n);
+        printf("\n TEST::The line: %s \n", line);
+	    printf("TEST::The size is %d \n", n);
 
    	    strncpy(command,line,5);
 
-    	printf("TEST::The command is: %s\n",command);
+    	printf("TEST::The command is: %s %d\n",command, strlen(command));
 
         //if read request
-        if(strcmp(command, "rrq  ")==0)	//if the command is rrq
+        if(strncmp(command, "rrq",3)==0)	//if the command is rrq
 	    {
         	//copy data into file
 	        int t = 0;
 
         	printf("TEST::Inside rrq if statement\n");
 
-	        for(j=5; j<strlen(line); j++)
+	        for(j=5; j<strlen(line)-1; j++)
         	{       
 	            	fileName[t]=line[j];
         	    	t++;
@@ -148,7 +145,7 @@ void message_echo (int socket_fd)
 
 		    //Check if the file is empty
 
-		    char tempCom[MAX_LINE_SIZE];
+		 /*   char tempCom[MAX_LINE_SIZE];
 		    int tempN;
 		    tempN = read_line(inFile, tempCom, MAX_LINE_SIZE); 
 
@@ -165,13 +162,13 @@ void message_echo (int socket_fd)
 
                 write_n(socket_fd, "eof\0", 4);
             }	
-
-	    } // TEMP END IF
-    } //TEMP END FOR
-		/* fseek (inFile, 0, SEEK_END);
-        	size = ftell(inFile);
-
-        	if (0 == size) 
+*/
+	    //} // TEMP END IF
+    //} //TEMP END FOR
+		// fseek (inFile, 0, SEEK_END);
+        //	size = ftell(inFile);
+//printf("TEST::File size, FD: %d\n", size);
+        	/*if (0 == size) 
 		{
             		printf("file is empty\n");
             		//if file is empty return eof mesage
@@ -179,69 +176,74 @@ void message_echo (int socket_fd)
             		write_n (socket_fd, line, n);
         	}
         	else
-		{
-            		strcpy(line, "data ");
-             		while( (n_char=read(getline(&data, &len, inFile)) != -1))
-            	}
-                if(count == 11)
-		        {
-                    //send message to see if client wants to continue to recieve messages
-                    strcpy(line, "fse   \0");
-                    write_n (socket_fd, line, n);
-                    n = read_line (socket_fd, line, MAX_LINE_SIZE);
-                    if (n == 0)
-                    {  
-                        break;
-                    }
-                    if (n < 0)
+		{*/
+             strcpy(line, "data ");
+             printf("TEST::after data line: %s\n", line);
+               // printf("TEST::File was opened, FD: %d\n", inFile);
+                while(n_char = read(getline(&data, &len, inFile)) != -1)
+                {
+                    if(count == 11)
                     {
-                        printf ("read_line ERROR in message_echo");
-                        exit (1);
-                    }
-                     
-                    strcpy(command,line[0]);
-                    strcat (command,line[1]);
-                    strcat (command,line[2]);
-                    strcat (command,line[3]);
-                    strcat (command,line[4]);
-                     
-                    //if about then close connection with client
-                    if(strcmp(command, "abort "))
-                        return;
-                    //otherwise continue with file transfer
+                        //send message to see if client wants to continue to recieve messages
+                        strcpy(line, "fse   \0");
+                        write_n (socket_fd, line, n);
+                        n = read_line (socket_fd, line, MAX_LINE_SIZE);
+                        if (n == 0)
+                        {  
+                            break;
+                        }
+                        if (n < 0)
+                        {
+                            printf ("read_line ERROR in message_echo");
+                            exit (1);
+                        }
 
-                }
-                 
-                strcat(line, data);
-                n_char=write(socket_fd,line,n_char+5);
-                count++;
-                //wait for ack message
-                for(;;)
-		{
-                    n = read_line (socket_fd, line, MAX_LINE_SIZE);
-                    if (n == 0)
-                    {  
-                        break;
+                        strncpy(command,line,5);
+
+                        //if about then close connection with client
+                        if(strcmp(command, "abort "))
+                            return;
+                        //otherwise continue with file transfer
+
                     }
-                    if (n < 0)
+                    
+                    printf("TEST:: before cat %d :\n", line);
+                    strcat(line, data);
+                   
+                   printf("TEST::after cat %d\n", line); n_char=write(socket_fd,line,n_char+5);
+                    count++;
+                    //wait for ack message
+                    for(;;)
                     {
-                        printf ("read_line ERROR in message_echo");
-                        exit (1);
-                    }
-                     
-                    strcpy(command,line[0]);
-                    strcat (command,line[1]);
-                    strcat (command,line[2]);
-                    strcat (command,line[3]);
-                    strcat (command,line[4]);
-                    if(strcmp(command, "ack "))
-                        break;
-                }//end for
+                        n = read_line (socket_fd, line, MAX_LINE_SIZE);
+                        if (n == 0)
+                        {  
+                            break;
+                        }
+                        if (n < 0)
+                        {
+                            printf ("read_line ERROR in message_echo");
+                            exit (1);
+                        }
+
+                        strncpy(command,line,5);
+                        if(strcmp(command, "ack "))
+                            break;
+                    }//end of for loop
+                }//end ofwhile statement
+                //end of file send to client
+                strcpy(line, "eof   \0");
+                write_n (socket_fd, line, n);
+                
+                
+                
+                
+            //}//end else
         }//end if
-    }//end for
+    
         
     //write request
-    else if(strcmp(command, "wrq  ")==0)
+    else if(strncmp(command, "wrq",3)==0)
     {
         
     }
@@ -251,10 +253,10 @@ void message_echo (int socket_fd)
         exit(1);
     }
     
-      */
+      
     
     
-    
+    }//end for
     
     
     

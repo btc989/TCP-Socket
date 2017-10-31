@@ -150,8 +150,9 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
         return;
     }
     //Create message to send to server
-    strcpy(send_line,"rrq  ");
+    strcpy(send_line,"rrq\t\t");
     strcat (send_line,fileName);
+    strcat (send_line,"\n\0");
     
     printf("TEST::The command being sent to server is: %s\n", send_line);
 
@@ -166,8 +167,8 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
     }    
     //CODE WILL WORK UP TO HE IF THE REST IS COMMENTED OUT
     
- // do
- // {
+  do
+  {
         printf("TEST::After write, i: %d\n", i);
 
     	n = read_line (socket_fd, recv_line, MAX_LINE_SIZE);
@@ -192,17 +193,13 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
         }        
 
         
-        /*    TEMP COMMENT 1 TO SEE IF UP TO HERE WORKS
 
 
 
 
-        //Probaby a better way to get first five characters
-        strcpy (command,recv_line[0]);
-        strcat (command,recv_line[1]);
-        strcat (command,recv_line[2]);
-        strcat (command,recv_line[3]);
-        strcat (command,recv_line[4]);
+
+        //Get the first 5 characters which is the command
+        strncpy(command,recv_line,5);
 
             
         //If data is being sent
@@ -223,7 +220,7 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
                 exit (1);
             }  
         }
-        //if over ten lines of data
+     /*   //if over ten lines of data
         else if(strcmp(command, "fse  "))
         {
             bzero(command, sizeof(command));
@@ -294,7 +291,7 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
         }
         END OF TEMP COMMENT 1*/
 
- // }while(strcmp(command,"eof"!=0));
+ }while(strcmp(command,"eof"!=0));
     
     if (ferror (fp))
     {
