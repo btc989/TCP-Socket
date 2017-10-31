@@ -50,47 +50,31 @@ int main (int argc, char **argv)
         addr_length = sizeof (client_addr);
 	new_socket_fd = accept (socket_fd, (struct sockaddr *) &client_addr, &addr_length);
 	printf ("Parent: Client arrived\n");
-        printf("Just before function call %d\n",new_socket_fd);
-	if (new_socket_fd < 0)
-	{
-	    printf ("accept ERROR in main");
-	    exit (1);
-    }
+
+        printf("TEST::Just before function call, Socket_FD: %d\n",new_socket_fd);
+
+	    if (new_socket_fd < 0)
+	    {
+	        printf ("accept ERROR in main");
+	        exit (1);
+       	    }
 
         
+        printf("TEST::Just before function call: message_echo\n");
         
-       
-
+        message_echo (new_socket_fd);		//call message_echo
         
+        printf("TEST::Just after function call: message_echo\n");
         
-        
-        
-        
-        
-        printf("Just before function call\n");
-        
-        message_echo (new_socket_fd);
-        
-        printf("after function call\n");
-        
-        
-        
-        
-        
-        
-        
-        close (new_socket_fd);
-        
-        
-        
+        close (new_socket_fd);			//close the socket before end of program
         
     }
 }
 
 void message_echo (int socket_fd)
 {
-    
-    printf("at very beginning \n");
+    printf("TEST::At beginning of message_echo\n");
+
     int i;
     int n;
     int j=0;
@@ -106,8 +90,11 @@ void message_echo (int socket_fd)
     size_t len = 0;
     int count =1;
     
-    for(;;){
-        printf("Just before read line\n");
+    for(;;)
+    {
+
+        printf("TEST::Just before read line\n");
+
         n = read_line (socket_fd, line, MAX_LINE_SIZE);
         if (n == 0)
         {  
@@ -123,117 +110,115 @@ void message_echo (int socket_fd)
            printf ("%c", line [i]);
         }
 
-        printf("The line %s %d",line, n);
-    
-    strncpy(command,line[0] ,5);
-  
-    
-    printf("The command %s",command);
-    //if read request
-   /* if(strcmp(command, "rrq  ")==0){
-        //copy data into file
-        int t =0;
-        printf("made it into rrq");
-        for(j=4; j<strlen(line); j++)
-        {       
-            fileName[t]=line[j];
-            t++;
-        }
-        printf("The filename %s",fileName);
-        inFile=open(fileName,O_RDONLY);
-        if (inFile==-1)
-        {       
-            printf("Error: Could Not Open File Name /n");
-            return;
-        }
-        
-        printf("Opened file /n" );
-        
-       /* fseek (inFile, 0, SEEK_END);
-        size = ftell(inFile);
+        printf("TEST::The line: %s\n",line);
+	    printf("TEST::The size is %d\n", n);
 
-        if (0 == size) {
-            printf("file is empty\n");
-            //if file is empty return eof mesage
-            strcpy(line, "eof   \0");
-            write_n (socket_fd, line, n);
-        }
-        else{
-            strcpy(line, "data ");
-             while( (n_char=read(getline(&data, &len, inFile)) != -1))
-            {
-                 if(count == 11){
-                     //send message to see if client wants to continue to recieve messages
-                     strcpy(line, "fse   \0");
-                     write_n (socket_fd, line, n);
-                     n = read_line (socket_fd, line, MAX_LINE_SIZE);
-                     if (n == 0)
-                     {  
+   	    strncpy(command,line,5);
+
+    	printf("TEST::The command is: %s\n",command);
+
+
+        //if read request
+     /* if(strcmp(command, "rrq  ")==0)
+	    {
+        	//copy data into file
+	        int t =0;
+        	printf("made it into rrq");
+	        for(j=4; j<strlen(line); j++)
+        	{       
+	            	fileName[t]=line[j];
+        	    	t++;
+        	}
+       		printf("The filename %s",fileName);
+        	inFile=open(fileName,O_RDONLY);
+        	if (inFile==-1)
+        	{       
+            		printf("Error: Could Not Open File Name /n");
+            		return;
+        	}
+        
+        	printf("Opened file /n" );
+        
+             /* fseek (inFile, 0, SEEK_END);
+        	size = ftell(inFile);
+
+        	if (0 == size) 
+		    {
+            		printf("file is empty\n");
+            		//if file is empty return eof mesage
+            		strcpy(line, "eof   \0");
+            		write_n (socket_fd, line, n);
+        	}
+        	else
+		    {
+            		strcpy(line, "data ");
+             		while( (n_char=read(getline(&data, &len, inFile)) != -1))
+            }
+                if(count == 11)
+		        {
+                    //send message to see if client wants to continue to recieve messages
+                    strcpy(line, "fse   \0");
+                    write_n (socket_fd, line, n);
+                    n = read_line (socket_fd, line, MAX_LINE_SIZE);
+                    if (n == 0)
+                    {  
                         break;
-                     }
-                     if (n < 0)
-                     {
+                    }
+                    if (n < 0)
+                    {
                         printf ("read_line ERROR in message_echo");
                         exit (1);
-                     }
+                    }
                      
-                     strcpy(command,line[0]);
-                     strcat (command,line[1]);
-                     strcat (command,line[2]);
-                     strcat (command,line[3]);
-                     strcat (command,line[4]);
+                    strcpy(command,line[0]);
+                    strcat (command,line[1]);
+                    strcat (command,line[2]);
+                    strcat (command,line[3]);
+                    strcat (command,line[4]);
                      
-                     //if about then close connection with client
-                     if(strcmp(command, "abort "))
-                         return;
-                     //otherwise continue with file transfer
+                    //if about then close connection with client
+                    if(strcmp(command, "abort "))
+                        return;
+                    //otherwise continue with file transfer
 
-                 }
+                }
                  
                 strcat(line, data);
                 n_char=write(socket_fd,line,n_char+5);
                 count++;
                 //wait for ack message
-                for(;;){
+                for(;;)
+		        {
                     n = read_line (socket_fd, line, MAX_LINE_SIZE);
-                     if (n == 0)
-                     {  
+                    if (n == 0)
+                    {  
                         break;
-                     }
-                     if (n < 0)
-                     {
+                    }
+                    if (n < 0)
+                    {
                         printf ("read_line ERROR in message_echo");
                         exit (1);
-                     }
+                    }
                      
-                     strcpy(command,line[0]);
-                     strcat (command,line[1]);
-                     strcat (command,line[2]);
-                     strcat (command,line[3]);
-                     strcat (command,line[4]);
-                     if(strcmp(command, "ack "))
-                         break;
-                }
-                 
-                 
-                
-            }
-        }
+                    strcpy(command,line[0]);
+                    strcat (command,line[1]);
+                    strcat (command,line[2]);
+                    strcat (command,line[3]);
+                    strcat (command,line[4]);
+                    if(strcmp(command, "ack "))
+                        break;
+                }//end for
+        }//end if
+    }//end for
         
-      
-        
-        
-
-        
-        
-        
-    }
     //write request
-    else if(strcmp(command, "wrq  ")==0){
+    else if(strcmp(command, "wrq  ")==0)
+    {
         
     }
-    else{
-        printf("Unknown Command");
+    else
+    {
+    	printf("Unknown Command");
         exit(1);
     }
     
@@ -243,7 +228,6 @@ void message_echo (int socket_fd)
     
     
     
-    }
     
     
     
@@ -265,21 +249,21 @@ void message_echo (int socket_fd)
         n = read_line (socket_fd, line, MAX_LINE_SIZE);
         if (n == 0)
         {  
-	    break;
+	        break;
         }
         if (n < 0)
         {
-	    printf ("read_line ERROR in message_echo");
-	    exit (1);
+	        printf ("read_line ERROR in message_echo");
+	        exit (1);
         }
         for (i = 0; i < n; i ++)
         {
-	    printf ("%c", line [i]);
+	        printf ("%c", line [i]);
         }
         if (write_n (socket_fd, line, n) != n)
         {
             printf ("write_n ERROR in message_echo");
-	    exit (1);
+	        exit (1);
         }
     }*/
-}
+} //end function

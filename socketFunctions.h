@@ -1,3 +1,6 @@
+#ifndef SOCKETFUNTIONS_H_
+#define SOCKETFUNTIONS_H_
+
 int read_line (int fd, char *ptr, int line_size)
 {
     int n;
@@ -80,3 +83,4 @@ int read_n (int fd, char *ptr, int n_bytes)
 
     return (n_bytes - n_left);
 }
+#endif

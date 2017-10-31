@@ -30,17 +30,17 @@ int main (int argc, char **argv)
     }
     
     /*ADDED TO GET WHAT USER WANTS */
-    printf("\n Enter File Name:");
+    printf("\n Enter File Name: ");
     scanf("%s", fileName);
     
-    printf("\n Would you like to read or write from file?");
+    printf("\n Would you like to read or write from file?: ");
     scanf("%s", command);
     //Error Check if command is recongized
     if((strcmp ("read",command) != 0) &&(strcmp ("write",command) != 0)){
         
         do{
             bzero(command, sizeof(command)); 
-            printf("\n Please enter read, write, or quit?");
+            printf("\n Please enter read, write, or quit?: ");
             scanf("%s", command);
         }while((strcmp ("read",command) != 0) &&(strcmp ("write",command) != 0) &&(strcmp ("quit",command) != 0)); 
         //user wants to quit program
@@ -76,16 +76,18 @@ int main (int argc, char **argv)
         exit (1);
     }
 
-    
-    if(strcmp ("write",command) == 0){
-        
-        write_file (stdin, socket_fd,fileName);   
+
+
+    //WHERE MOST OF THE WORK WILL HAPPEN
+
+    if(strcmp ("write",command) == 0){ 			//if the user said WRITE
+        write_file (stdin, socket_fd,fileName);   	//call write_file
     }
-    else{
-        read_file(stdin, socket_fd,fileName);   
+    else{                    				//if the user said READ
+        read_file(stdin, socket_fd,fileName);   	//call read_file
     }
     
-   // send_message (stdin, socket_fd);
+    //send_message (stdin, socket_fd);  		//call send_message function
 
     close (socket_fd);
 
@@ -123,11 +125,12 @@ void send_message (FILE *fp, int socket_fd)
 
     return;
 }
+
 /*ADDED FROM THIS POINT ONWARD */
 void read_file (FILE *fp, int socket_fd, char * fileName)
 {
+    printf("TEST::Beginning of read_file function\n");
 
-    printf("in read_file function");
     int i;
     int n;
     int j=4;
@@ -137,9 +140,10 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
     char command [MAX_LINE_SIZE];
     int output;
     
-    printf("This is filename %s \n",fileName);
-   //open or create file
-    output=open(fileName,O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    printf("TEST::This is the filename: %s\n",fileName);
+
+    //open or create file
+    output=open(fileName, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
     if(output == -1){
         printf("Error could not open file\n");
         return;
@@ -148,17 +152,17 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
     strcpy(send_line,"rrq  ");
     strcat (send_line,fileName);
     
-    printf("command being sent to server %s \n", send_line);
+    printf("TEST::The command being sent to server is: %s\n", send_line);
 
     n = strlen (send_line);
-    printf("size of line %d",n);
+
+    printf("TEST::The size of command is: %d\n",n);
+
     if ((i = write_n (socket_fd, send_line, n)) != n)
     {
         printf ("write_n ERROR in send_message");
 	    exit (1);
-    }
-        
-        
+    }        
       /*  do{
             n = read_line (socket_fd, recv_line, MAX_LINE_SIZE);
             if (n < 0)
