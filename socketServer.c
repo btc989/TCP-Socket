@@ -180,7 +180,7 @@ void message_echo (int socket_fd)
              strcpy(line, "data ");
              printf("TEST::after data line: %s\n", line);
                // printf("TEST::File was opened, FD: %d\n", inFile);
-                while(n_char = read(getline(&data, &len, inFile)) != -1)
+                while((n_char = read_line(inFile, data, MAX_LINE_SIZE)) != -1)
                 {
                     if(count == 11)
                     {
@@ -207,14 +207,15 @@ void message_echo (int socket_fd)
 
                     }
                     
-                    printf("TEST:: before cat %d :\n", line);
+                    printf("TEST:: before cat %s :\n", line);
                     strcat(line, data);
                    
-                   printf("TEST::after cat %d\n", line); n_char=write(socket_fd,line,n_char+5);
+                   printf("TEST::after cat %s\n", line); n_char=write(socket_fd,line,n_char+5);
                     count++;
                     //wait for ack message
                     for(;;)
                     {
+                        printf("TEST::waitng for ack \n");
                         n = read_line (socket_fd, line, MAX_LINE_SIZE);
                         if (n == 0)
                         {  
@@ -225,9 +226,9 @@ void message_echo (int socket_fd)
                             printf ("read_line ERROR in message_echo");
                             exit (1);
                         }
-
+                        printf("TEST:: still waitng for ack  %s\n",line);
                         strncpy(command,line,5);
-                        if(strcmp(command, "ack "))
+                        if(strncmp(command, "ack",3)==0)
                             break;
                     }//end of for loop
                 }//end ofwhile statement

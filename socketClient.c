@@ -150,7 +150,7 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
         return;
     }
     //Create message to send to server
-    strcpy(send_line,"rrq\t\t");
+    strcpy(send_line,"rrq  ");
     strcat (send_line,fileName);
     strcat (send_line,"\n\0");
     
@@ -203,25 +203,30 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
 
             
         //If data is being sent
-        if(strcmp(command, "data "))  //THE REPLY WILL NOT ME "DATA", it will be the first line of the file
+        if(strncmp(command, "data",4)==0)  //THE REPLY WILL NOT ME "DATA", it will be the first line of the file
 	    {
       		//copy data into file
             for(j=4; j<strlen(recv_line); j++)
             {       
-                n_char=write(output,recv_line[j],n_char);
+               printf("TEST::in writing to file %c\n",recv_line[j]); n_char=write(output,recv_line[j],n_char);
+                if(n_char<0 ){
+                    printf ("ERROR: Failed to write to file \n");
+                }
             }
 
+            printf("TEST::After writing to file\n");
             //send server ack
-            strcpy(send_line,"ack  ");
+            strcpy(send_line,"ack  \n\0");
             n = strlen (send_line);
             if ((i = write_n (socket_fd, send_line, n)) != n)
             {
                 printf ("write_n ERROR in send_message");
                 exit (1);
             }  
+            printf("TEST::After ack sent\n");
         }
-     /*   //if over ten lines of data
-        else if(strcmp(command, "fse  "))
+        //if over ten lines of data
+        else if(strncmp(command, "fse",3)==0)
         {
             bzero(command, sizeof(command));
             printf("\n File over 10 Lines of data. Continue Y or N?");
@@ -289,9 +294,8 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
                 }
             }
         }
-        END OF TEMP COMMENT 1*/
 
- }while(strcmp(command,"eof"!=0));
+ }while(strncmp(command,"eof",3)!=0);
     
     if (ferror (fp))
     {
