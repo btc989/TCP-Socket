@@ -30,17 +30,17 @@ int main (int argc, char **argv)
     }
     
     /*ADDED TO GET WHAT USER WANTS */
-    printf("\n Enter File Name:");
+    printf("\n Enter File Name: ");
     scanf("%s", fileName);
     
-    printf("\n Would you like to read or write from file?");
+    printf("\n Would you like to read or write from file?: ");
     scanf("%s", command);
     //Error Check if command is recongized
     if((strcmp ("read",command) != 0) &&(strcmp ("write",command) != 0)){
         
         do{
             bzero(command, sizeof(command)); 
-            printf("\n Please enter read, write, or quit?");
+            printf("\n Please enter read, write, or quit?: ");
             scanf("%s", command);
         }while((strcmp ("read",command) != 0) &&(strcmp ("write",command) != 0) &&(strcmp ("quit",command) != 0)); 
         //user wants to quit program
@@ -76,16 +76,18 @@ int main (int argc, char **argv)
         exit (1);
     }
 
-    
-    if(strcmp ("write",command) == 0){
-        
-        write_file (stdin, socket_fd,fileName);   
+
+
+    //WHERE MOST OF THE WORK WILL HAPPEN
+
+    if(strcmp ("write",command) == 0){ 			//if the user said WRITE
+        write_file (stdin, socket_fd,fileName);   	//call write_file
     }
-    else{
-        read_file(stdin, socket_fd,fileName);   
+    else{                    				//if the user said READ
+        read_file(stdin, socket_fd,fileName);   	//call read_file
     }
     
-   // send_message (stdin, socket_fd);
+    //send_message (stdin, socket_fd);  		//call send_message function
 
     close (socket_fd);
 
@@ -123,11 +125,12 @@ void send_message (FILE *fp, int socket_fd)
 
     return;
 }
+
 /*ADDED FROM THIS POINT ONWARD */
 void read_file (FILE *fp, int socket_fd, char * fileName)
 {
+    printf("TEST::Beginning of read_file function\n");
 
-    printf("in read_file function");
     int i;
     int n;
     int j=4;
@@ -137,130 +140,162 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
     char command [MAX_LINE_SIZE];
     int output;
     
-    printf("This is filename %s \n",fileName);
-   //open or create file
-    output=open(fileName,O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
-    if(output == -1){
+    printf("TEST::This is the filename: %s\n",fileName);
+
+    //open or create file
+    output=open(fileName, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    if(output == -1)
+    {
         printf("Error could not open file\n");
         return;
     }
     //Create message to send to server
     strcpy(send_line,"rrq  ");
     strcat (send_line,fileName);
+    strcat (send_line,"\n\0");
     
-    printf("command being sent to server %s \n", send_line);
+    printf("TEST::The command being sent to server is: %s\n", send_line);
 
     n = strlen (send_line);
-    printf("size of line %d",n);
+
+    printf("TEST::The size of command is: %d\n",n);
+
     if ((i = write_n (socket_fd, send_line, n)) != n)
     {
         printf ("write_n ERROR in send_message");
 	    exit (1);
-    }
-        
-        
-      /*  do{
-            n = read_line (socket_fd, recv_line, MAX_LINE_SIZE);
-            if (n < 0)
-            {
-                printf ("read_line ERROR in send_message");
-                exit (1);
-            }
-            fputs (recv_line, stdout);
+    }    
+    //CODE WILL WORK UP TO HE IF THE REST IS COMMENTED OUT
+    
+  do
+  {
+        printf("TEST::After write, i: %d\n", i);
 
-            //Probaby a better way to get first five characters
-            strcpy(command,recv_line[0]);
-            strcat (command,recv_line[1]);
-            strcat (command,recv_line[2]);
-            strcat (command,recv_line[3]);
-            strcat (command,recv_line[4]);
+    	n = read_line (socket_fd, recv_line, MAX_LINE_SIZE);
+        
+        //If n == 0 there was no data recieved
+        //If n > 0 there was data recieved could be file data or eof
+        //If n < 0 there was an error
+        
+        printf("TEST::Command from server is: %s\n", recv_line);
+        printf("TEST::Command lenght is: %d\n", n);
+
+        if (n <= 0)
+        {
+        	printf ("read_line ERROR in send_message");
+            exit (1);
+        }
+        fputs (recv_line, stdout);
+
+        if (n > 0)
+        {
+            printf("TEST::%d\n", strcmp(recv_line,"eof"));  //should be 0 if they are the same
+        }        
+
+    
+        //Get the first 5 characters which is the command
+        strncpy(command,recv_line,5);
 
             
-            //If data is being sent
-            if(strcmp(command, "data ")){
-
-               
-
-                //copy data into file
-                for(j=4; j<strlen(recv_line); j++)
-                {       
-                    n_char=write(output,recv_line[j],n_char);
+        //If data is being sent
+        if(strncmp(command, "data",4)==0)  //THE REPLY WILL NOT ME "DATA", it will be the first line of the file
+	    {
+      		//copy data into file
+            for(j=4; j<strlen(recv_line); j++)
+            {       
+               printf("TEST::in writing to file %c\n",recv_line[j]); n_char=write(output,recv_line[j],n_char);
+                if(n_char<0 ){
+                    printf ("ERROR: Failed to write to file \n");
                 }
+            }
 
+            printf("TEST::After writing to file\n");
+            //send server ack
+            strcpy(send_line,"ack  \n\0");
+            n = strlen (send_line);
+            if ((i = write_n (socket_fd, send_line, n)) != n)
+            {
+                printf ("write_n ERROR in send_message");
+                exit (1);
+            }  
+            printf("TEST::After ack sent\n");
+        }
+        //if over ten lines of data
+        else if(strncmp(command, "fse",3)==0)
+        {
+            bzero(command, sizeof(command));
+            printf("\n File over 10 Lines of data. Continue Y or N?");
+            scanf("%s", command);
+            //Error Check if command is recongized
+            if((strcmp(command,"Y") != 0) &&(strcmp(command,"N") != 0)&&(strcmp(command,"y") != 0) &&(strcmp(command,"n") != 0))
+	        {
+	 	        do
+		        {
+                    bzero(command, sizeof(command)); 
+                    printf("\n Please enter Y or N?");
+                    scanf("%s", command);
+                }while((strcmp ("Y",command) != 0) &&(strcmp ("N",command) != 0)&&(strcmp ("y",command) != 0) &&(strcmp ("n",command) != 0)); 
+            }
+            //send server cont message
+            if((strcmp ("Y",command) == 0) ||(strcmp ("y",command) == 0))
+            {
                 //send server ack
-                strcpy(send_line,"ack  ");
+                strcpy(send_line,"cont \n\0");
                 n = strlen (send_line);
                 if ((i = write_n (socket_fd, send_line, n)) != n)
                 {
                     printf ("write_n ERROR in send_message");
-                exit (1);
+                    exit (1);
                 }  
-            }
-            //if over ten lines of data
-            else if(strcmp(command, "fse  ")){
+            }   
 
-                bzero(command, sizeof(command));
-                printf("\n File over 10 Lines of data. Continue Y or N?");
-                scanf("%s", command);
-                //Error Check if command is recongized
-                if((strcmp(command,"Y") != 0) &&(strcmp(command,"N") != 0)&&(strcmp(command,"y") != 0) &&(strcmp(command,"n") != 0)){
-
-                    do{
-                        bzero(command, sizeof(command)); 
-                        printf("\n Please enter Y or N?");
-                        scanf("%s", command);
-                    }while((strcmp ("Y",command) != 0) &&(strcmp ("N",command) != 0)&&(strcmp ("y",command) != 0) &&(strcmp ("n",command) != 0)); 
+            //send abort message
+            else
+            {
+                //send server ack
+                strcpy(send_line,"abort\n\0");
+                n = strlen (send_line);
+                if ((i = write_n (socket_fd, send_line, n)) != n)
+                {
+                    printf ("write_n ERROR in send_message");
+                    exit (1);
+                }  
+                //wait for ack
+                //then return
+                n = read_line (socket_fd, recv_line, MAX_LINE_SIZE);
+                if (n < 0)
+                {
+                    printf ("read_line ERROR in send_message");
+                    exit (1);
                 }
-                //send server cont message
-                if((strcmp ("Y",command) != 0) &&(strcmp ("y",command) != 0)){
-                    //send server ack
-                    strcpy(send_line,"cont  ");
-                    n = strlen (send_line);
-                    if ((i = write_n (socket_fd, send_line, n)) != n)
-                    {
-                        printf ("write_n ERROR in send_message");
-                        exit (1);
-                    }  
-                }
-                //send abort message
-                else{
-                    //wait for ack
-                    //then return
-                    n = read_line (socket_fd, recv_line, MAX_LINE_SIZE);
-                    if (n < 0)
-                    {
-                        printf ("read_line ERROR in send_message");
-                        exit (1);
-                    }
-                    fputs (recv_line, stdout);
+                fputs (recv_line, stdout);
 
-                    //Probaby a better way to get first five characters
-                    strcpy(command,recv_line[0]);
-                    strcat (command,recv_line[1]);
-                    strcat (command,recv_line[2]);
-                    strcat (command,recv_line[3]);
-                    strcat (command,recv_line[4]);
+                //Probaby a better way to get first five characters
+                strncpy(command,recv_line,5);
+                
                     
-                    if(strcmp(command, "ack  ")){
-                        close(output);
-                        //remove any data sent from server
-                        int status = remove(fileName);
+                if(strcmp(command, "ack  "))
+                {
+                    close(output);
+                    //remove any data sent from server
+                    int status = remove(fileName);
  
-                       if( status == 0 )
-                          printf("%s file deleted successfully.\n",fileName);
-                       else
-                       {
-                          printf("Unable to delete the file\n");
-                          perror("Error");
-                          exit(1);
-                       }
-                        return;
+                    if( status == 0 )
+                    {
+                        printf("%s file deleted successfully.\n",fileName);
                     }
+                    else
+                    {
+                        printf("Unable to delete the file\n");
+                        perror("Error");
+                        exit(1);
+                    }
+                    return;
                 }
-
             }
-        
-        }while(strcmp(command,"eof  "!=0));*/
+        }
+
+ }while(strncmp(command,"eof",3)!=0);
     
     if (ferror (fp))
     {
@@ -270,6 +305,7 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
     close(output);
     return;
 }
+
 void write_file (FILE *fp, int socket_fd, char * fileName)
 {
     
