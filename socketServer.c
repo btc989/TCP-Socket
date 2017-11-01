@@ -81,6 +81,7 @@ void message_echo (int socket_fd)
     int n_char=0;
     int size;
     int inFile;
+	int outFile;
     char line [MAX_LINE_SIZE];
     char fileName [MAX_LINE_SIZE];
     char data [MAX_LINE_SIZE];
@@ -142,8 +143,8 @@ void message_echo (int socket_fd)
         
         	printf("TEST::File was opened, FD: %d\n", inFile);
         
-             strcpy(line, "data ");
-             printf("TEST::after data line: %s\n", line);
+            strcpy(line, "data ");
+            printf("TEST::after data line: %s\n", line);
                // printf("TEST::File was opened, FD: %d\n", inFile);
                 while((n_char = read_line(inFile, data, MAX_LINE_SIZE)) >0)
                 {
@@ -222,16 +223,64 @@ void message_echo (int socket_fd)
         }//end if
     
         
-    //write request
-    else if(strncmp(command, "wrq",3)==0)
-    {
-        
-    }
-    else
-    {
-    	printf("Unknown Command");
-        exit(1);
-    }
+		//write request
+		else if(strncmp(command, "wrq",3)==0)  //if the command from the client begins with wrq
+		{
+			int t = 0; //temp counter for getting file name
+
+			printf("TEST::Inside wrq if statement\n");   ///TEST STATEMENT
+			
+			//GOT wrq SENDING ack
+			if ((i = write_n(socket_fd, "ack\n\0", 5)) != 5)
+			{
+				printf ("Error: ack return error\n");
+				exit (1);
+			}
+			
+			//GOT response from client
+			n = read_line(socket_fd, line, MAX_LINE_SIZE);
+
+			printf("TEST::return size read_line is: '%d'\n", n);		///TEST STATEMENT
+			printf("TEST::return message from read_line is: '%s'\n", line); ///TEST STATEMENT
+
+			if (n < 0) //we had an error
+			{
+				printf("Error: File return from client\n");
+				exit (1);
+			}
+			else if (n == 0) //nothing in message
+			{  
+				printf("Client responded with nothing\n");
+				exit(1);
+			}
+			else //we got values back
+			{	
+				if(strncmp(line,"eof",3)==0) //the client sent a eof
+				{
+					printf("Client sent eof, Sending ack back\n");
+					if ((i = write_n(socket_fd, "ack\n\0", 5)) != 5) //send the wrq to the server
+					{
+						printf("Error: sending ack to server\n");
+						exit(1);
+					}
+					
+					printf("TEST::Sent ack to client, size is %d\n", i); /// TEST STATEMENT
+				}
+				else
+				{
+					printf("TEST::Client responeded with data\n");  ///TEST STATEMENT
+				}
+				
+				exit(1);
+			} //end else
+		} //end else if
+
+		//Client sent a bad command
+		else
+		{
+			printf("Unknown Command");
+			exit(1);
+		}
     
     }//end for
     return;
