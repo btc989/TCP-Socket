@@ -115,100 +115,82 @@ void message_echo (int socket_fd)
 	    printf("TEST::The size is %d \n", n);
 
    	    strncpy(command,line,5);
-
+        //get fileName
+        //copy data into file
+	    int t = 0;
+	    for(j=5; j<strlen(line)-1; j++)
+        {       
+	       fileName[t]=line[j];
+           t++;
+        }
+        printf("TEST::The filename %s\n",fileName);
     	printf("TEST::The command is: %s %d\n",command, strlen(command));
 
         //if read request
         if(strncmp(command, "rrq",3)==0)	//if the command is rrq
 	    {
-        	//copy data into file
-	        int t = 0;
-
-        	printf("TEST::Inside rrq if statement\n");
-
-	        for(j=5; j<strlen(line)-1; j++)
-        	{       
-	            	fileName[t]=line[j];
-        	    	t++;
-        	}
-
-       		printf("TEST::The filename %s\n",fileName);
-
         	inFile=open(fileName,O_RDONLY);
         	if (inFile==-1)
         	{       
-            		printf("Error: Could Not Open File Name /n");
+            		printf("ERROR: Could Not Open File Name /n");
             		return;
         	}
         
-        	printf("TEST::File was opened, FD: %d\n", inFile);
-        
-             strcpy(line, "data ");
-             printf("TEST::after data line: %s\n", line);
-               // printf("TEST::File was opened, FD: %d\n", inFile);
-                while((n_char = read_line(inFile, data, MAX_LINE_SIZE)) >0)
+        	printf("%s was opened successfully\n", fileName);
+            strcpy(line, "data ");
+             
+            while((n_char = read_line(inFile, data, MAX_LINE_SIZE)) >0)
+            {
+                if(count == 11)
                 {
-                    if(count == 11)
-                    {
-                        printf("TEST::count is 11\n");
-                        //send message to see if client wants to continue to recieve messages
-                        strcpy(line, "fse   \n\0");
-                        n= strlen(line);
-                        write_n (socket_fd, line, n);
-                        printf("TEST::after fse line: %s\n", line);
-                        
-                        do{
-                            n = read_line (socket_fd, line, MAX_LINE_SIZE);
-                            if (n == 0)
-                            {  
-                                break;
-                            }
-                            if (n < 0)
-                            {
-                                printf ("read_line ERROR in message_echo");
-                                exit (1);
-                            }
+                    printf("%s has over 10 lines of data, sending for client approval\n",fileName);
+                    //send message to see if client wants to continue to recieve messages
+                    strcpy(line, "fse   \n\0");
+                    n= strlen(line);
+                    write_n (socket_fd, line, n);
+                    do{
+                        n = read_line (socket_fd, line, MAX_LINE_SIZE);
+                        if (n == 0)
+                            break;
+                            
+                        if (n < 0)
+                        {
+                            printf ("ERROR: reading from client");
+                            exit (1);
+                        }
 
-                            strncpy(command,line,5);
-                            printf("TEST::waitng for client decision: %s\n", line);
-                            //if about then close connection with client
-                            if(strncmp(command, "abort",5)==0){
-                                strcpy(line, "ack \n\0");
-                                n= strlen(line);
-                                write_n (socket_fd, line, n);
-                                printf("TEST::sent abort ack: %s\n", line);
-                                close(inFile);
-                                return;
-                              }
+                        strncpy(command,line,5);
+                        printf("Client decision: %s\n", line);
+                        //if about then close connection with client
+                        if(strncmp(command, "abort",5)==0){
+                            strcpy(line, "ack \n\0");
+                            n= strlen(line);
+                            write_n (socket_fd, line, n);
+                            printf("Sent abort acknowledgment\n");
+                            close(inFile);
+                            return;
+                        }
                         }while(strncmp(command, "cont",4)!=0);
                         bzero(line, sizeof(line));
                         strcpy(line, "data ");
                         //otherwise continue with file transfer
-
                     }
                     
-                    printf("TEST:: before cat %s :\n", line);
                     strcat(line, data);
                     strcat(line, "\n\0");
-                   
-                   printf("TEST::after cat %s\n", line); n_char=write(socket_fd,line,n_char+5);
                     count++;
                     //wait for ack message
                     do{
-                        printf("TEST::waitng for ack \n");
+                        printf("Waitng for acknowledgement for data \n");
                         n = read_line (socket_fd, line, MAX_LINE_SIZE);
-                        if (n == 0)
-                        {  
+                        if (n == 0) 
                             break;
-                        }
                         if (n < 0)
                         {
-                            printf ("read_line ERROR in message_echo");
+                            printf ("ERROR: reading from client");
                             exit (1);
                         }
-                        printf("TEST:: still waitng for ack  %s\n",line);
-                        strncpy(command,line,5);
-                        
+                        strncpy(command,line,5);   
                     }while(strncmp(command, "ack",3)!=0);//end of for loop
                     
                     //clear everything ready for next data set
@@ -218,68 +200,90 @@ void message_echo (int socket_fd)
                 //end of file send to client
                 strcpy(line, "eof  \n\0");
                 write_n (socket_fd, line, n);
-                printf("TEST:: after eof sent %s\n",line);
+                printf("End of File %s\n");
                 close(inFile);
                 return;
-                
-                
-                
-            //}//end else
         }//end if
-    
-        
 		//write request
 		else if(strncmp(command, "wrq",3)==0)  //if the command from the client begins with wrq
 		{
+            FILE *fd;
+            fd=fopen(fileName, "w");
+            if(fd == NULL){
+                printf("ERROR: failed to open or create file");
+                return;
+            }
 			int t = 0; //temp counter for getting file name
 
 			printf("TEST::Inside wrq if statement\n");   ///TEST STATEMENT
 			
 			//GOT wrq SENDING ack
-			if ((i = write_n(socket_fd, "ack\n\0", 5)) != 5)
+            strcpy(line, "ack \n\0");
+            n= strlen(line);
+			if ((i = write_n(socket_fd, line, n)) != n)
 			{
 				printf ("Error: ack return error\n");
 				exit (1);
 			}
-			
-			//GOT response from client
-			n = read_line(socket_fd, line, MAX_LINE_SIZE);
+          
+            do
+            {
+                printf("TEST::Inside do while statement\n");
+                n = read_line (socket_fd, line, MAX_LINE_SIZE);
+                //If n == 0 there was no data recieved
+                //If n > 0 there was data recieved could be file data or eof
+                //If n < 0 there was an error
+                if (n <= 0)
+                {
+                    printf ("ERROR: could not read from server");
+                    return;
+                }
+                //Get the first 5 characters which is the command
+                strncpy(command,line,5);
 
-			printf("TEST::return size read_line is: '%d'\n", n);		///TEST STATEMENT
-			printf("TEST::return message from read_line is: '%s'\n", line); ///TEST STATEMENT
+                printf("TEST::Inside do while statement %s\n",command);
+                //If data is being sent
+                if(strncmp(command, "data",4)==0)  //THE REPLY WILL NOT ME "DATA", it will be the first line of the file
+                {
+                    printf("TEST::Inside data \n");
+                    //if over 11 lines
+                    if(count>=11){
 
-			if (n < 0) //we had an error
-			{
-				printf("Error: File return from client\n");
-				exit (1);
-			}
-			else if (n == 0) //nothing in message
-			{  
-				printf("Client responded with nothing\n");
-				exit(1);
-			}
-			else //we got values back
-			{	
-				if(strncmp(line,"eof",3)==0) //the client sent a eof
-				{
-					printf("Client sent eof, Sending ack back\n");
-					if ((i = write_n(socket_fd, "ack\n\0", 5)) != 5) //send the wrq to the server
-					{
-						printf("Error: sending ack to server\n");
-						exit(1);
-					}
-					
-					printf("TEST::Sent ack to client, size is %d\n", i); /// TEST STATEMENT
-				}
-				else
-				{
-					printf("TEST::Client responeded with data\n");  ///TEST STATEMENT
-				}
-				
-				exit(1);
-			} //end else
-		} //end else if
-
+                        //send fse message
+                        //wait for abort
+                        //delete file
+                        //ack abort
+                        return;
+                    }
+                    //copy data into file char by char to avoid the server command
+                    printf("Data Sent From Client: ");
+                    for(j=5; j<strlen(line); j++){
+                        fputc( line[j],fd);
+                        printf("%c",line[j]);
+                    }
+                    //send server ack
+                    strcpy(line,"ack  \n\0");
+                    n = strlen (line);
+                    printf("TEST::send data ack %s\n",line);
+                    if ((i = write_n (socket_fd, line, n)) != n)
+                    {
+                        printf ("ERROR could not write to server");
+                        return;
+                    }  
+                }
+                count++;
+            }while(strncmp(command,"eof",3)!=0);
+            fclose(fd);
+            strcpy(line, "ack \n\0");
+            n= strlen(line);
+            if ((i = write_n(socket_fd, line, n)) != n)
+            {
+                printf ("Error: ack return error\n");
+                exit (1);
+            }    
+        
+            return;
+        }
 		//Client sent a bad command
 		else
 		{

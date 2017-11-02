@@ -97,8 +97,6 @@ int main (int argc, char **argv)
 /*ADDED FROM THIS POINT ONWARD */
 void read_file (FILE *fp, int socket_fd, char * fileName)
 {
-    printf("TEST::Beginning of read_file function\n");
-
     int i;
     int n;
     int j=4;
@@ -108,16 +106,6 @@ void read_file (FILE *fp, int socket_fd, char * fileName)
     char test [MAX_LINE_SIZE];
     char command [MAX_LINE_SIZE];
     int output;
-    
-    printf("TEST::This is the filename: %s\n",fileName);
-
-    //open or create file
-   /* output=open(fileName, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
-    if(output == -1)
-    {
-        printf("Error could not open file\n");
-        return;
-    }*/
     FILE *fd;
     fd=fopen(fileName, "w");
     if(fd == NULL){
@@ -251,13 +239,17 @@ void write_file (FILE *fp, int socket_fd, char * fileName)
 
     char send_line [MAX_LINE_SIZE];
 	char recv_line [MAX_LINE_SIZE];
+	char command [MAX_LINE_SIZE];
 	int n = 0;
 	int i = 0;
 	int inFile = 0;
-	
-	
+	int n_char=0;
+    char data [MAX_LINE_SIZE];
+	bzero(data, sizeof(data));
 	//SEND wrq
-    strcpy(send_line,"wrq\n\0"); //Create message to send to server
+    strcpy(send_line,"wrq  "); //Create message to send to server
+    strcat (send_line,fileName);
+    strcat (send_line,"\n\0");
     n = strlen (send_line);  //lenght of the command
 	
     printf("TEST::The command being sent to server is: '%s'\n", send_line);  ///TEST STATEMENT
@@ -302,10 +294,73 @@ void write_file (FILE *fp, int socket_fd, char * fileName)
 			
 			printf("TEST::File was opened, FD: %d\n", inFile);  ///TEST STATEMENT
 			
-			n = read_line(inFile, send_line, MAX_LINE_SIZE); //get the first line of the file
-			if (n == 0) //the file is empty
-			{
-				if ((i = write_n(socket_fd, "eof\n\0", 5)) != 5) //send the wrq to the server
+            strcpy(send_line,"data ");
+            while((n_char = read_line(inFile, data, MAX_LINE_SIZE)) >0)
+            {
+				strcat(send_line, data); 
+				strcat(send_line, "\0"); //add null to the end of the string
+				printf("TEST::Sending data: %s\n", send_line); ///TEST STATEMENT
+                
+				if ((i = write_n(socket_fd, send_line, n)) != n) //send the wrq to the server
+				{
+					printf("Error: sending wrq to server\n");
+					exit(1);
+				}
+				
+				printf("TEST::Data was sent\n");
+                //get ack or fse
+                
+                
+                n = read_line(socket_fd, recv_line, MAX_LINE_SIZE);
+				
+				printf("TEST::read_line is: '%s'\n", recv_line);  ///TEST STATEMENT
+				
+				if (n <= 0) //there was a read error
+				{
+					printf("Error: ack problem with eof send\n");
+					exit(1);
+				}
+				else
+				{
+                    if(strncmp(recv_line,"fse",3)==0)//we got ack from the server
+					{
+                        //abort
+                         strcpy(send_line,"abort\n\0"); //Create message to send to server
+                         n = strlen (send_line);  //lenght of the command
+                            if ((i = write_n(socket_fd, send_line, n)) != n) //send the wrq to the server
+                            {
+                                printf("Error: sending wrq to server\n");
+                                exit(1);
+                            }
+                        //wait for ack message
+                    do{
+                        printf("Waitng for acknowledgement for data \n");
+                        n = read_line (socket_fd, recv_line, MAX_LINE_SIZE);
+                        if (n == 0) 
+                            break;
+                        if (n < 0)
+                        {
+                            printf ("ERROR: reading from client");
+                            exit (1);
+                        }
+                        strncpy(command,recv_line,5);   
+                    }while(strncmp(command, "ack",3)!=0);//end of for loop
+                        //wait for ack
+                        
+                        //then return
+						printf("Server sent ack\n");
+                        close(inFile);
+						exit(1);	
+					}
+				}
+                bzero(send_line, sizeof(send_line));
+                bzero(recv_line, sizeof(send_line));
+                strcpy(send_line, "data ");
+            }
+			
+            strcpy(send_line,"eof  \n\0"); //Create message to send to server
+            n = strlen (send_line);  //lenght of the command
+				if ((i = write_n(socket_fd, send_line, n)) != n) //send the wrq to the server
 				{
 					printf("Error: sending wrq to server\n");
 					exit(1);
@@ -325,8 +380,7 @@ void write_file (FILE *fp, int socket_fd, char * fileName)
 					exit(1);
 				}
 				else
-				{
-					if(strncmp(recv_line,"ack",3)==0)//we got ack from the server
+				{   	      if(strncmp(recv_line,"ack",3)==0)//we got ack from the server
 					{
 						printf("Server sent ack\n");
 						exit(1);	
@@ -337,21 +391,6 @@ void write_file (FILE *fp, int socket_fd, char * fileName)
 						exit(1);
 					}
 				}
-			}
-			else //the file has data
-			{
-				printf("TEST::Sending data to the server\n"); ///TEST STATEMENT
-				printf("TEST::Sending data: '%s'\n", send_line); ///TEST STATEMENT
-				
-				strcat(send_line, "\0"); //add null to the end of the string
-				if ((i = write_n(socket_fd, send_line, n+1)) != n+1) //send the wrq to the server
-				{
-					printf("Error: sending wrq to server\n");
-					exit(1);
-				}
-				
-				printf("TEST::Data was sent\n");
-			}
 		}
 		else //the response was not ack
 		{
