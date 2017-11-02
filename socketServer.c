@@ -143,8 +143,8 @@ void message_echo (int socket_fd)
         
         	printf("TEST::File was opened, FD: %d\n", inFile);
         
-            strcpy(line, "data ");
-            printf("TEST::after data line: %s\n", line);
+             strcpy(line, "data ");
+             printf("TEST::after data line: %s\n", line);
                // printf("TEST::File was opened, FD: %d\n", inFile);
                 while((n_char = read_line(inFile, data, MAX_LINE_SIZE)) >0)
                 {
@@ -158,25 +158,28 @@ void message_echo (int socket_fd)
                         printf("TEST::after fse line: %s\n", line);
                         
                         do{
-                        n = read_line (socket_fd, line, MAX_LINE_SIZE);
-                        if (n == 0)
-                        {  
-                            break;
-                        }
-                        if (n < 0)
-                        {
-                            printf ("read_line ERROR in message_echo");
-                            exit (1);
-                        }
+                            n = read_line (socket_fd, line, MAX_LINE_SIZE);
+                            if (n == 0)
+                            {  
+                                break;
+                            }
+                            if (n < 0)
+                            {
+                                printf ("read_line ERROR in message_echo");
+                                exit (1);
+                            }
 
-                        strncpy(command,line,5);
-                        printf("TEST::waitng for client decision: %s\n", line);
-                        //if about then close connection with client
-                        if(strcmp(command, "abort")==0)
-                            strcpy(line, "ack /n/0");
-                            n= strlen(line);
-                            write_n (socket_fd, line, n);
-                            return;
+                            strncpy(command,line,5);
+                            printf("TEST::waitng for client decision: %s\n", line);
+                            //if about then close connection with client
+                            if(strncmp(command, "abort",5)==0){
+                                strcpy(line, "ack \n\0");
+                                n= strlen(line);
+                                write_n (socket_fd, line, n);
+                                printf("TEST::sent abort ack: %s\n", line);
+                                close(inFile);
+                                return;
+                              }
                         }while(strncmp(command, "cont",4)!=0);
                         bzero(line, sizeof(line));
                         strcpy(line, "data ");
@@ -216,6 +219,8 @@ void message_echo (int socket_fd)
                 strcpy(line, "eof  \n\0");
                 write_n (socket_fd, line, n);
                 printf("TEST:: after eof sent %s\n",line);
+                close(inFile);
+                return;
                 
                 
                 

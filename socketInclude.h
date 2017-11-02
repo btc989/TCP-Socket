@@ -14,7 +14,7 @@
 #define MAXLINE 512
 /*char *pname;*/
 
-void send_message (FILE *fp, int socket_fd);
+
 int read_line (int fd, char *ptr, int line_size);
 int write_n (int fd, char *ptr, int n_bytes);
 int read_n (int fd, char *ptr, int n_bytes);
