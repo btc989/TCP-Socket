@@ -297,19 +297,19 @@ void write_file (FILE *fp, int socket_fd, char * fileName)
             strcpy(send_line,"data ");
             while((n_char = read_line(inFile, data, MAX_LINE_SIZE)) >0)
             {
-				strcat(send_line, data); 
-				strcat(send_line, "\0"); //add null to the end of the string
-				printf("TEST::Sending data: %s\n", send_line); ///TEST STATEMENT
-                
-				if ((i = write_n(socket_fd, send_line, n)) != n) //send the wrq to the server
-				{
-					printf("Error: sending wrq to server\n");
-					exit(1);
-				}
-				
-				printf("TEST::Data was sent\n");
-                //get ack or fse
-                
+				strcat (send_line,data);
+                strcat (send_line,"\n\0");
+                n = strlen (send_line);  //lenght of the command
+
+                printf("TEST::The command being sent to server is: '%s'\n", send_line);  ///TEST STATEMENT
+                printf("TEST::The command size is %d\n", n); ///TEST STATEMENT
+                printf("TEST::The socketFD is: %d\n", socket_fd);  //TEST STATEMENT
+
+                if ((i = write_n(socket_fd, send_line, n)) != n) //send the wrq to the server
+                {
+                    printf("Error: sending wrq to server\n");
+                    exit(1);
+                }
                 
                 n = read_line(socket_fd, recv_line, MAX_LINE_SIZE);
 				
@@ -352,6 +352,11 @@ void write_file (FILE *fp, int socket_fd, char * fileName)
                         close(inFile);
 						exit(1);	
 					}
+                    else if(strncmp(recv_line, "ack", 3)!=0){
+                        //pe teserver sent junk or something not exc
+                        printf("Server sent junk %s\n",recv_line);
+                        return
+                    }
 				}
                 bzero(send_line, sizeof(send_line));
                 bzero(recv_line, sizeof(send_line));

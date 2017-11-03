@@ -230,6 +230,7 @@ void message_echo (int socket_fd)
             {
                 printf("TEST::Inside do while statement\n");
                 n = read_line (socket_fd, line, MAX_LINE_SIZE);
+                printf("TEST::after read %d\n",n);
                 //If n == 0 there was no data recieved
                 //If n > 0 there was data recieved could be file data or eof
                 //If n < 0 there was an error
