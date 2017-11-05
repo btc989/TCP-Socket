@@ -1,0 +1,131 @@
+Script started on Sun Nov  5 16:15:07 2017
+Script on a049404[1]% cat small[K[K[K[K[Kemput[K[Kyt[K[Kty.txt
+Script on a049404[2]% Client a049406
+
+ Enter File Name: empty.txt
+
+ Would you like to read or write from file?: write
+Server responeded with acknowledgment
+File was opened
+Sending EOF messageServer sent ack
+Script on a049404[3]% cat small.tt[Kxt
+This is a test.
+Script on a049404[4]% cat small.txt[23GClient a049406
+
+ Enter File Name: small.txt
+
+ Would you like to read or write from file?: write
+Server responeded with acknowledgment
+File was opened
+The command being sent to server is: data This is a test.
+
+Sending EOF messageServer sent ack
+Script on a049404[5]% cat big.txt
+This is a test.
+1
+2
+3
+4
+5
+6
+TEST TEST
+Script on a049404[6]% cat big.txt[23GClient a049406
+
+ Enter File Name: big.txt
+
+ Would you like to read or write from file?: write
+Server responeded with acknowledgment
+File was opened
+The command being sent to server is: data This is a test.
+
+The command being sent to server is: data 1
+
+The command being sent to server is: data 2
+
+The command being sent to server is: data 3
+
+The command being sent to server is: data 4
+
+The command being sent to server is: data 5
+
+The command being sent to server is: data 6
+
+The command being sent to server is: data TEST TEST
+
+Sending EOF messageServer sent ack
+Script on a049404[7]% cat fse.txt
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+
+Script on a049404[8]% cat fse.txt[23GClient a049406
+
+ Enter File Name: fse.txt
+
+ Would you like to read or write from file?: write
+Server responeded with acknowledgment
+File was opened
+The command being sent to server is: data 1
+
+The command being sent to server is: data 2
+
+The command being sent to server is: data 3
+
+The command being sent to server is: data 4
+
+The command being sent to server is: data 5
+
+The command being sent to server is: data 6
+
+The command being sent to server is: data 7
+
+The command being sent to server is: data 8
+
+The command being sent to server is: data 9
+
+The command being sent to server is: data 10
+
+The command being sent to server is: data 11
+
+File Size exceeed message recieved. Sending abort 
+Server sent acknowledgment
+Script on a049404[9]% diff empty .txt /[KserverDir/empty.txt 
+Script on a049404[10]% diff empty.txt serverDir/empty.txty[P[P[P[P[P[1@s[1@m[1@a[1@l[1@l.txt serverDir/empty[P[P[P[P[P[1@s[1@m[1@a[1@l[1@l
+Script on a049404[11]% diff small.txt serverDir/small.txt[24G[Kdiff big.txt serverDir/big.txt 
+Script on a049404[12]% diff big.txt serverDir/big.txt[24G[Kdiff fse.txt serverDir/fse.txe[Kt
+diff: serverDir/fse.txt: No such file or directory
+Script on a049404[13]% cd [K[Kls
+[0m[38;5;34mClient[0m*  big.txt     empty.txt  [38;5;27mserverDir[0m/  socketClient.c
+[38;5;34mServer[0m*  client.log  fse.txt    small.txt   socketFunctions.h
+[mScript on a049404[14]% cd serverDir
+Script on a049404[15]% ls
+[0m[38;5;34mServer[0m*  empty.txt  socketFunctions.h  socketServer.c
+big.txt  small.txt  socketInclude.h
+[mScript on a049404[16]% cat empyt[K[Kty.txt
+Script on a049404[17]% cat b[Ksmall.txt
+This is a test.
+Script on a049404[18]% sm[K[Kcat big.txt 
+This is a test.
+1
+2
+3
+4
+5
+6
+TEST TEST
+Script on a049404[19]% cat [K[K[Kexit
+exit
+
+Script done on Sun Nov  5 16:17:42 2017

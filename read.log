@@ -1,0 +1,92 @@
+Script started on Sun Nov  5 16:18:14 2017
+Script on a049404[1]% Client a049404[K6
+
+ Enter File Name: empyt.   ty.txt
+
+ Would you like to read or write from file?: read
+End of File recieved. Closing ConnectionScript on a049404[2]% Client a049406[23G[K
+Script on a049404[2]% Client a049406
+
+ Enter File Name: small.txt
+
+ Would you like to read or write from file?: read
+Data Sent From Server: This is a test.
+End of File recieved. Closing ConnectionScript on a049404[3]% 
+Script on a049404[3]% Client a049406
+
+ Enter File Name: big.txt
+
+ Would you like to read or write from file?: read
+Data Sent From Server: This is a test.
+Data Sent From Server: 1
+Data Sent From Server: 2
+Data Sent From Server: 3
+Data Sent From Server: 4
+Data Sent From Server: 5
+Data Sent From Server: 6
+Data Sent From Server: TEST TEST
+End of File recieved. Closing ConnectionScript on a049404[4]% Client a049406[23G[K
+Script on a049404[4]% Client a049406
+
+ Enter File Name: read    fse.txt
+
+ Would you like to read or write from file?: read
+Data Sent From Server: 1
+Data Sent From Server: 2
+Data Sent From Server: 3
+Data Sent From Server: 4
+Data Sent From Server: 5
+Data Sent From Server: 6
+Data Sent From Server: 7
+Data Sent From Server: 8
+Data Sent From Server: 9
+Data Sent From Server: 10
+
+ File over 10 Lines of data. Continue Y or N?Y
+Data Sent From Server: 11
+Data Sent From Server: 12
+Data Sent From Server: 13
+Data Sent From Server: 14
+Data Sent From Server: 15
+Data Sent From Server: 
+End of File recieved. Closing ConnectionScript on a049404[5]% 
+Script on a049404[5]% diff empty .txt serverDir/empty.txt 
+Script on a049404[6]% diff em[K[Ksmall.txt serverDir/small.txt 
+Script on a049404[7]% diff big.txt   serverDir/big.txt 
+Script on a049404[8]% diff fse.txt serverDir/fse.txt 
+Script on a049404[9]% ls
+[0m[38;5;34mClient[0m*  big.txt    fse.txt   [38;5;27mserverDir[0m/  socketClient.c     write.log
+[38;5;34mServer[0m*  empty.txt  read.log  small.txt   socketFunctions.h
+[mScript on a049404[10]% cat empyt[K[Kyt[K[Kty.txt
+Script on a049404[11]% cat small.txt
+This is a test.
+Script on a049404[12]% cat big.txt
+This is a test.
+1
+2
+3
+4
+5
+6
+TEST TEST
+Script on a049404[13]% cat fse.txt
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+
+Script on a049404[14]% exit
+exit
+
+Script done on Sun Nov  5 16:20:38 2017
