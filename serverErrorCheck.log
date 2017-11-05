@@ -1,0 +1,101 @@
+Script started on Sun Nov  5 09:46:38 2017
+Script on a049404[1]% gcc -o server socketServer.c
+Script on a049404[2]% ./server
+Parent: Server on port 4259
+Parent: Waiting for client
+Parent: Client arrived
+
+ The line recieved : rrq  testingtesting
+ 
+The filename testingtesting
+ERROR: Could Not Open File Name 
+Parent: Waiting for client
+Parent: Client arrived
+
+ The line recieved : wrq  testertesting
+ 
+The filename testertesting
+Sending Client acknowledgment to begin write
+ERROR: could not read from serverParent: Waiting for client
+Parent: Client arrived
+
+ The line recieved : rrq  overten
+ 
+The filename overten
+overten was opened successfully
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+overten has over 10 lines of data, sending for client approval
+Client decision: cont 
+
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+End of File eof  
+
+Parent: Waiting for client
+Parent: Client arrived
+
+ The line recieved : rrq  overten
+ 
+The filename overten
+overten was opened successfully
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+overten has over 10 lines of data, sending for client approval
+^C
+Script on a049404[3]% ./server
+Parent: Server on port 4259
+Parent: Waiting for client
+Parent: Client arrived
+
+ The line recieved : rrq  overten
+ 
+The filename overten
+overten was opened successfully
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+overten has over 10 lines of data, sending for client approval
+Waitng for acknowledgement for data 
+Waitng for acknowledgement for data 
+End of File eof  
+
+Parent: Waiting for client
+Parent: Client arrived
+
+ The line recieved : rrq  empty
+ 
+The filename empty
+empty was opened successfully
+End of File eof  
+
+Parent: Waiting for client
+exit
+^C
+Script on a049404[4]% exit
+exit
+
+Script done on Sun Nov  5 10:13:40 2017

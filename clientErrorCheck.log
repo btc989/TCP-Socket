@@ -1,0 +1,115 @@
+Script started on Sun Nov  5 09:46:36 2017
+Script on a049403[1]% gcc -o client socketClient.c
+Script on a049403[2]% ./client
+argc ERROR in main: Not enough argumentsScript on a049403[3]% 
+Script on a049403[3]% ./clin[Kent a049404
+
+ Enter File Name: tester
+
+ Would you like to read or write from file?: wer
+
+ Please enter read, write, or quit?: readf
+
+ Please enter read, write, or quit?: gres
+
+ Please enter read, write, or quit?: quit
+Script on a049403[4]% ./client a049404
+
+ Enter File Name: testingtesting
+
+ Would you like to read or write from file?: read
+ERROR: could not read from serverScript on a049403[5]% 
+Script on a049403[5]% 
+Script on a049403[5]% ./client a049404
+
+ Enter File Name: testertesting
+
+ Would you like to read or write from file?: write
+Server responeded with acknowledgment
+Error: Could Not Open File /nScript on a049403[6]% 
+Script on a049403[6]% 
+Script on a049403[6]% ./client a049404
+
+ Enter File Name: overten
+
+ Would you like to read or write from file?: read
+Data Sent From Server: one 
+Data Sent From Server: two
+Data Sent From Server: three
+Data Sent From Server: four
+Data Sent From Server: five
+Data Sent From Server: six
+Data Sent From Server: seven
+Data Sent From Server: eight
+Data Sent From Server: nine
+Data Sent From Server: ten
+
+ File over 10 Lines of data. Continue Y or N?jdjd
+
+ Please enter Y or N?jjgg
+
+ Please enter Y or N?s
+
+ Please enter Y or N?y
+Data Sent From Server: eleven
+Data Sent From Server: twelve 
+End of File recieved. Closing ConnectionScript on a049403[7]% 
+Script on a049403[7]% 
+Script on a049403[7]% ./client a049404[K6
+
+ Enter File Name: test
+
+ Would you like to read or write from file?: read
+connect ERROR in mainScript on a049403[8]% 
+Script on a049403[8]% ./client a049406
+
+ Enter File Name: ^C
+Script on a049403[9]% ./client a049406[K4
+
+ Enter File Name: overten
+
+ Would you like to read or write from file?: read
+Data Sent From Server: one 
+Data Sent From Server: two
+Data Sent From Server: three
+Data Sent From Server: four
+Data Sent From Server: five
+Data Sent From Server: six
+Data Sent From Server: seven
+Data Sent From Server: eight
+Data Sent From Server: nine
+Data Sent From Server: ten
+
+ File over 10 Lines of data. Continue Y or N?y
+ERROR: could not read from serverScript on a049403[10]% 
+Script on a049403[10]% ./client a049404
+
+ Enter File Name: overten
+
+ Would you like to read or write from file?: read
+Data Sent From Server: one 
+Data Sent From Server: two
+Data Sent From Server: three
+Data Sent From Server: four
+Data Sent From Server: five
+Data Sent From Server: six
+Data Sent From Server: seven
+Data Sent From Server: eight
+Data Sent From Server: nine
+Data Sent From Server: ten
+
+ File over 10 Lines of data. Continue Y or N?^C
+Script on a049403[11]% ./client a049404 haha
+argc ERROR in main: Too many argumentsScript on a049403[12]% 
+Script on a049403[12]% ./client a049404 haha[K[K[K[K
+
+ Enter File Name: empty
+
+ Would you like to read or write from file?: read
+End of File recieved. Closing ConnectionScript on a049403[13]% ./client a049404
+
+ Enter File Name: ^C
+Script on a049403[14]% exit
+exit
+
+Script done on Sun Nov  5 10:13:33 2017
