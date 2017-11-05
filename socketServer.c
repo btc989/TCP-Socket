@@ -1,6 +1,5 @@
-#
-include "socketInclude.h"#
-include "socketFunctions.h"
+#include "socketInclude.h"
+#include "socketFunctions.h"
 
 int main(int argc, char * * argv) {
   int socket_fd;
@@ -25,7 +24,7 @@ int main(int argc, char * * argv) {
     printf("gethostbyname ERROR in main: %s does not exist", host_name);
     exit(1);
   }
-  memcpy( & server_addr.sin_addr, hp - > h_addr, hp - > h_length);
+  memcpy( & server_addr.sin_addr, hp -> h_addr, hp -> h_length);
   server_addr.sin_port = htons(TCP_PORTNO);
 
   if (bind(socket_fd, (struct sockaddr * ) & server_addr, sizeof(server_addr)) < 0) {
@@ -84,7 +83,6 @@ void message_echo(int socket_fd) {
       }
 
       printf("\n The line recieved : %s \n", line);
-
       strncpy(command, line, 5);
       //get fileName
       //copy data into file
@@ -142,7 +140,9 @@ void message_echo(int socket_fd) {
           }
 
           strcat(line, data);
-          strcat(line, "\n\0");
+          strcat(line, " \n\0");
+         printf("TEST:: %s",line);
+          write_n(socket_fd, line, n);
           count++;
           //wait for ack message
           do {
@@ -265,7 +265,6 @@ void message_echo(int socket_fd) {
             }
             count++;
           }
-
         } while (strncmp(command, "eof", 3) != 0);
         fclose(fd);
         printf("End of File Recieved. Sending acknowlegdment.\n");
@@ -275,7 +274,6 @@ void message_echo(int socket_fd) {
           printf("Error: ack return error\n");
           exit(1);
         }
-
         return;
       }
       //Client sent a bad command

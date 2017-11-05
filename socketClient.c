@@ -1,6 +1,5 @@
-#
-include "socketInclude.h"#
-include "socketFunctions.h"
+#include "socketInclude.h"
+#include "socketFunctions.h"
 
 int main(int argc, char * * argv) {
   int i;
@@ -61,7 +60,7 @@ int main(int argc, char * * argv) {
     printf("gethostbyname ERROR in main: %s does not exist", argv[1]);
     exit(1);
   }
-  memcpy( & server_addr.sin_addr, hp - > h_addr, hp - > h_length);
+  memcpy( & server_addr.sin_addr, hp -> h_addr, hp -> h_length);
   server_addr.sin_port = htons(TCP_PORTNO);
 
   if (connect(socket_fd, (struct sockaddr * ) & server_addr, sizeof(server_addr)) < 0) {
@@ -113,8 +112,12 @@ void read_file(FILE * fp, int socket_fd, char * fileName) {
     exit(1);
   }
 
+    
   do {
+      printf("TEST:: before first readline \n");
     n = read_line(socket_fd, recv_line, MAX_LINE_SIZE);
+      
+    printf("TEST:: %s \n",recv_line);
     //If n == 0 there was no data recieved
     //If n > 0 there was data recieved could be file data or eof
     //If n < 0 there was an error
