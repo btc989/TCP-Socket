@@ -114,10 +114,9 @@ void read_file(FILE * fp, int socket_fd, char * fileName) {
 
     
   do {
-      printf("TEST:: before first readline \n");
-    n = read_line(socket_fd, recv_line, MAX_LINE_SIZE);
       
-    printf("TEST:: %s \n",recv_line);
+    n = read_line(socket_fd, recv_line, MAX_LINE_SIZE);
+    
     //If n == 0 there was no data recieved
     //If n > 0 there was data recieved could be file data or eof
     //If n < 0 there was an error

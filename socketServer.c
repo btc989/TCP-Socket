@@ -141,7 +141,7 @@ void message_echo(int socket_fd) {
 
           strcat(line, data);
           strcat(line, " \n\0");
-         printf("TEST:: %s",line);
+         
           n = strlen(line);
           write_n(socket_fd, line, n);
           count++;
